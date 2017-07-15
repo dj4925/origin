@@ -51,13 +51,18 @@ def user_post(username):
                     url = temp['images']['standard_resolution']['url']
                     urlretrieve(url, name)
                     print "Downloaded post (%d): File name :%s" % (i,name)
+
+                    # For portability of displaying on various systems
                     import os
-                    os.system('display -delay 5 /root/PycharmProjects/how_to/%s' % name)
+                    try:
+                        os.system('display -delay 5 /root/PycharmProjects/how_to/%s' % name)
+                    except:
+                        break
                     id_s.append(temp['id'])
                     i = i + 1
 
 
-                id_s.append(raw)  # for recent_liked function
+                id_s.append(raw)  # json data appended in the end of the post id list
                 return id_s
 
             else:
@@ -81,7 +86,7 @@ def list_comments(post_id):
             for temp in raw['data']:
                 print "[%s]  :  [id :%s]"%(temp['text'],temp['id'])
         else:
-            print "Post does not exist"
+            print "No comments"
     else:
         print "Error code :%s" % raw['meta']['code']
 
@@ -116,7 +121,8 @@ def del_comment(post_id):
 # Recent post liked by a user
 def recent_liked(username):
     post_id = user_post(username)
-    for temp in post_id[-1]['data']:
+    a = post_id[-1]
+    for temp in a['data']:
         if temp!=None and temp['user_has_liked']!=None:
             if temp['user_has_liked'] == True:
                 print "File name(recently liked) :%s.jpg" % temp['id']
@@ -142,7 +148,17 @@ def user_info(username):
 # Get list of likes on a post,set like on a post and remove like from a post
 def user_likes(username):
     post_id = user_post(username)
-    index = int(raw_input("Select post index[1,2,3...] :"))
+    # Error handling for invalid inputs
+    while True:
+        try:
+            index = int(raw_input("Select post index[1,2,3...] :"))
+            if index>len(post_id):
+                print "Invalid post id"
+                continue
+        except ValueError:
+            print "Only nos :"
+            continue
+        break
     while True:
         request_url = (base_url + 'media/%s/likes/?access_token=%s') % (post_id[index - 1], app_access_token)
         print "1. Get list of users who liked this post"
@@ -163,7 +179,7 @@ def user_likes(username):
             else:
                 print "Error code : %s" % raw['meta']['code']
         elif choice == '2':
-            req_url = (base_url + 'media/%s/likes') % post_id
+            req_url = (base_url + 'media/%s/likes') % post_id[index-1]
             payload = {'access_token': app_access_token}
             raw = requests.post(req_url, payload).json()
             if raw['meta']['code'] == 200:
@@ -196,7 +212,7 @@ def own_post():
                 name = temp['id'] + '.jpg'
                 url = temp['images']['standard_resolution']['url']
                 from urllib import urlretrieve
-                urlretrieve(url, name)
+                urlretrieve(url, name)                         # Downloading
                 print "Downloaded post :%s"%temp['id']
                 import os
                 os.system('display -delay 5 /root/PycharmProjects/how_to/%s' % name)
@@ -210,6 +226,3 @@ def own_post():
         print "Error code :%s" % raw['meta']['code']
 
 
-#print "Caption :%s" % raw['data'][0]['caption']['text']
-#print "Location : lat( %s ),long(%s)" % (raw['data'][0]['location']['latitude'],raw['data'][0]['location']['longitude'])
-#print "Post link :%s" % raw['data'][0]['link']

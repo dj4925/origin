@@ -5,8 +5,7 @@ id_s = []
 gni_lat = 30.268556249048
 gni_long =  77.022399902344
 
-
-
+# Filter function(includes caption,like,comment,location,hash_tags or simply no of posts to download, filtering)
 def cap():
     caption = raw_input("Please(result depends on your caption) :")
     return caption
@@ -33,13 +32,10 @@ def max_post():
     return count
 
 def filt(raw):
-    #con = ["temp['caption']['text']", "temp['caption']['from']['username']", "temp['likes']['counts']",
-    #       "temp['comments']['counts']", "temp['location']['lat']", "temp['location']['long']", "len(temp['tags'])"]
-    #print raw
     print "\nChoose filter :"
-    choice =int(raw_input("1.Caption\n2.No of Likes\n3.No of Comments\n4.Location\n5.Tags\n6.All Filters\n7.Max_posts\n8.Continue without filter\n"))
+    choice =raw_input("1.Caption\n2.No of Likes\n3.No of Comments\n4.Location\n5.Tags\n6.All Filters\n7.Max_posts\n8.Continue without filter\n")
     post = []
-    if choice==1:
+    if choice=='1':
         caption = cap()
         print caption
         for temp in raw['data']:
@@ -52,7 +48,7 @@ def filt(raw):
         else:
             print "No post with this caption"
             return 0
-    elif choice==2:
+    elif choice=='2':
         likes = lik()
         for temp in raw['data']:
             if temp['likes']['count']>=likes:
@@ -62,7 +58,7 @@ def filt(raw):
         else:
             print "No post greater than %d likes" % likes
             return 0
-    elif choice==3:
+    elif choice=='3':
         comments = comm()
         for temp in raw['data']:
             if temp['comments']['count']>=comments:
@@ -72,20 +68,20 @@ def filt(raw):
         else:
             print "No post with this comment"
             return 0
-    elif choice==4:
+    elif choice=='4':
         long,lat = loc()
         for temp in raw['data']:
             if temp!=None and temp['location']!=None:
                 la = temp['location']['latitude']
                 lo = temp['location']['longitude']
-                if ("%.2f" % la) == ("%.2f" % lat):
+                if ("%.2f" % la) == ("%.2f" % lat):         # Float formatting for comparision
                     if ("%.2f" % lo) == ("%.2f" % long):
                         post.append(temp)
         if len(post) != 0:
             return post
         else:
             return 0
-    elif choice==5:
+    elif choice=='5':
         tags = tagged()
         for temp in raw['data']:
             for tag in temp['tags']:
@@ -95,7 +91,7 @@ def filt(raw):
             return post
         else:
             return 0
-    elif choice==6:
+    elif choice=='6':
         caption = cap()
         likes = lik()
         comments = comm()
@@ -115,7 +111,8 @@ def filt(raw):
             return post
         else:
             return 0
-    elif choice==7:
+    elif choice=='7':
+        # Controlling the no of times,the loop continues
         count = max_post()
         for temp in raw['data']:
             if temp!=None:
@@ -127,9 +124,10 @@ def filt(raw):
             return post
         else:
             return 0
-    else:
+    elif choice=='8':
         return raw['data']
-
+    else:
+        print "Invalid input. Sorry no 'try again' for filters.\nContinuing ---"
 
 
 

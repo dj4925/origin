@@ -1,5 +1,8 @@
+# imports
 import requests
 from locker import own_post,recent_liked,self_info,id,user_info,user_likes,user_post,del_comment,list_comments,post_comments
+
+# Credentials
 app_access_token='5698555330.b4d9142.aa541fd0781e4114877f6e38ba3bc8ff'
 base_url = 'https://api.instagram.com/v1/'
 
@@ -22,8 +25,18 @@ while True:
                 user_likes(user)
             elif choice == '3':
                 post_id = user_post(user)
-                index = int(raw_input("Select downloaded post index[1,2,3..] :"))
 
+                # Error handling for invalid inputs
+                while True:
+                    try:
+                        index = int(raw_input("Select downloaded post index[1,2,3..] :"))
+                        if index>len(post_id):
+                            print "Invalid post index no.[1 to %d]" % len(post_id)
+                            continue
+                    except ValueError:
+                        print "Only nos from 1 to %d" % len(post_id)
+                        continue
+                    break
                 while True:
                     scan = raw_input("\n1. List comments\n2. Add comments\n3. Delete comments\n4. Back")
                     if scan == '1':
