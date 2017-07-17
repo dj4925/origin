@@ -1,3 +1,4 @@
+# Main file
 import requests
 from locker import own_post,recent_liked,self_info,id,user_info,user_likes,user_post,del_comment,list_comments,post_comments
 app_access_token='5698555330.b4d9142.aa541fd0781e4114877f6e38ba3bc8ff'
@@ -58,6 +59,6 @@ while True:
     elif scan == '4':
         break
     else:
-        print "Have a good day"
+        print "Enjoy Instagram"
         break
 
